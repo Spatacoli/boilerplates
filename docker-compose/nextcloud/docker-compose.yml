@@ -1,0 +1,24 @@
+version: "3.8"
+
+volumes:
+  nextcloud_aio_mastercontainer:
+    name: nextcloud_aio_mastercontainer
+  nc-data:
+    driver: local
+
+services:
+  nextcloud:
+    image: nextcloud/all-in-one:latest
+    restart: unless-stopped
+    container_name: nextcloud-aio-mastercontainer
+    volumes:
+      - nextcloud_aio_mastercontainer:/mnt/docker-aio-config
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - nc-data:/mnt/ncdata
+    ports:
+      - 8080:8080
+
+    environment:
+      - APACHE_PORT=11000
+      - NEXTCLOUD_DATADIR=/mnt/ncdata
+  
