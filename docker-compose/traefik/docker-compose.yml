@@ -1,0 +1,33 @@
+version: "3.3"
+
+services:
+  traefik:
+    image: "traefik:latest"
+    container_name: "traefik"
+    restart: unless-stopped
+    networks:
+      - traefik-proxy
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /home/todd/traefik/data/traefik.yml:/traefik.yml:ro
+      - /home/todd/traefik/data/config.yml:/config.yml
+      - /home/todd/traefik/data/letsencrypt:/letsencrypt
+      - /home/todd/traefik/data/traefik.log:/traefik.log
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      - CF_API_EMAIL=
+      - CF_API_KEY=
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=traefik-proxy
+      - traefik.http.routers.traefik.tls=true
+      - traefik.http.routers.traefik.tls.certresolver=cloudflare
+      - traefik.http.routers.traefik.tls.domains[0].main=
+      - traefik.http.routers.traefik.tls.domains[0].sans=*.
+      - traefik.http.routers.traefik.service=api@internal
+networks:
+  traefik-proxy:
+    external: true

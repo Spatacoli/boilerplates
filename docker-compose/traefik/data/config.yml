@@ -1,0 +1,32 @@
+http:
+  routers:
+    nextcloud:
+      entrypoints:
+        - "https"
+      rule: "Host(``)"
+      middlewares:
+        - https-redirect
+        - nextcloud-secure-headers
+      tls:
+        domains:
+          - main: ""
+      service: nextcloud
+  services:
+    nextcloud:
+      loadBalancer:
+        servers:
+          - url: "http://:11000"
+        passHostHeader: true
+  middlewares:
+    https-redirect:
+      redirectScheme:
+        scheme: https
+        permanent: true
+
+    nextcloud-secure-headers:
+      headers:
+        hostsProxyHeaders:
+          - "X-Forwarded-Host"
+        referrerPolicy: "same-origin"
+        customResponseHeaders:
+          X-Robots-Tag: "none"
